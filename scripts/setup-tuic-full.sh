@@ -486,10 +486,14 @@ for _ in 1 2 3 4 5 6 7 8 9 10; do
   sleep 1
 done
 if [ "$OK" != "1" ]; then
-  echo "!! stats API not answering — inspect: journalctl -u gs-tuic -n 30"
-  exit 1
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  echo "!! WARNING: stats API not answering — quota counting is NOT"
+  echo "!! working yet. The cron guard IS installed (step 8) and will"
+  echo "!! keep retrying. Inspect: journalctl -u gs-tuic -n 30"
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+else
+  echo "-- stats API OK ($STATS_ADDR)"
 fi
-echo "-- stats API OK ($STATS_ADDR)"
 
 # Firewall (only if ufw is present and active).
 if command -v ufw >/dev/null 2>&1 && ufw status | grep -qi "status: active"; then
