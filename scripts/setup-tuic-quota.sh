@@ -395,6 +395,15 @@ exit 0
 TUIC_GUARD_EOF
 chmod 755 /usr/local/bin/tuic-render.py /usr/local/bin/add-tuic /usr/local/bin/gs-tuic-guard
 
+# 3b. Cron guard — installed FIRST, before any step below that can fail
+# or exit. (On the first JP install the stats check in step 5 aborted the
+# script before cron was written, so the quota guard never ran.)
+cat > /etc/cron.d/gs-tuic-guard <<'CRON_EOF'
+*/5 * * * * root /usr/local/bin/gs-tuic-guard >>/var/log/gs-tuic-guard.log 2>&1
+CRON_EOF
+chmod 644 /etc/cron.d/gs-tuic-guard
+echo "-- cron guard installed (/etc/cron.d/gs-tuic-guard)"
+
 # 4. Render + check + restart with the stats-enabled binary.
 python3 /usr/local/bin/tuic-render.py
 /usr/local/bin/sing-box check -c "$CONFIG"
@@ -412,16 +421,16 @@ for _ in 1 2 3 4 5 6 7 8 9 10; do
   sleep 1
 done
 if [ "$OK" != "1" ]; then
-  echo "!! stats API not answering — inspect: journalctl -u gs-tuic -n 30"
-  exit 1
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  echo "!! WARNING: stats API not answering — quota counting is NOT"
+  echo "!! working yet. The cron guard IS installed and will keep"
+  echo "!! retrying. Inspect: journalctl -u gs-tuic -n 30"
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+else
+  echo "-- stats API OK"
 fi
-echo "-- stats API OK"
 
-# 6. Cron guard + first status snapshot.
-cat > /etc/cron.d/gs-tuic-guard <<'CRON_EOF'
-*/5 * * * * root /usr/local/bin/gs-tuic-guard >>/var/log/gs-tuic-guard.log 2>&1
-CRON_EOF
-chmod 644 /etc/cron.d/gs-tuic-guard
+# 6. First status snapshot (cron already installed in step 3b).
 /usr/local/bin/gs-tuic-guard || true
 
 echo ""
