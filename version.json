@@ -1,1 +1,1 @@
-{"versionCode": 112, "apkUrl": "https://github.com/gglnpr-afk/aeriva-updates/releases/download/Aeriva-1.0-V112/aeriva-1.0-v112.apk", "notes": "Build 112: Kill switch + auto-reconnect, My IP display, clipboard import, backup/restore, WireGuard, HY2 obfs + port hopping"}
+{"versionCode": 115, "apkUrl": "https://github.com/gglnpr-afk/aeriva-updates/releases/download/Aeriva-1.0-V115/aeriva-1.0-v115.apk", "notes": "Build 115: WireGuard fixed (new engine), HY2 port-hop crash fixed, stability hardening"}
